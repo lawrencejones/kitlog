@@ -1,4 +1,4 @@
-# kitlog
+# kitlog [![CircleCI](https://circleci.com/gh/lawrencejones/kitlog.svg?style=svg)](https://circleci.com/gh/lawrencejones/kitlog)
 
 The smallest of logging libraries that imitates the go-kit logger interface.
 Super simple, just:
