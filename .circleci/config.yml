@@ -1,0 +1,46 @@
+---
+version: 2
+
+references:
+  bundle_install: &bundle_install
+    run:
+      name: Bundle
+      command: gem install bundler && bundle install --path vendor/bundle --jobs=4 --retry=3
+
+  cache_bundle_for_lockfile: &cache_bundle_for_lockfile
+    save_cache:
+      key: ruby2.6.5-Gemfile-{{ checksum "Gemfile.lock" }}
+      paths:
+        - vendor/bundle
+
+  cache_bundle: &cache_bundle
+    save_cache:
+      key: ruby2.6.5-Gemfile
+      paths:
+        - vendor/bundle
+
+  restore_bundle: &restore_bundle
+    restore_cache:
+      keys:
+        - ruby2.6.5-Gemfile-{{ checksum "Gemfile.lock" }}
+        - ruby2.6.5-Gemfile
+
+jobs:
+  build:
+    docker:
+      - image: "ruby:2.6.5"
+    working_directory: ~/kitlog
+    steps:
+      - checkout
+      - *restore_bundle
+      - *bundle_install
+      - *cache_bundle_for_lockfile
+      - *cache_bundle
+      - run: bundle exec rubocop
+      - run: bundle exec rspec
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - build
